@@ -1,0 +1,58 @@
+{
+	"manifest_version": 2,
+	"name": "That GForm Validator",
+	"version": "0.1.0",
+
+	"description": "That GForm Validator - Adds validation to elements of Google Forms",
+
+	"permissions": [
+		// "identity",
+		"storage",
+		"tabs"
+	],
+	// "browser_action": {
+		// "default_icon": {
+			// "32": "img/fav32.ico" // unpacked exts need .png :)
+			// "32": "img/fav128.png"
+		// }
+		// "default_popup": "html/popup.html"
+	// },
+	"icons": {
+		// "48": "img/icon48.png",
+    	"128": "img/fav128.png"
+    },
+
+    "content_scripts": [
+		{
+			"matches": [ "https://docs.google.com/forms/*" ],
+			"css": [
+				"css/validator_link.css"
+			],
+			"js": [
+				"js/jquery-3.1.1.min.js",
+				"js/Utils.js",
+
+				"js/MainContent.js"
+				// TODO: potential to add firebase stuff here
+				// "js/FirebaseContentScriptAPI.js",
+			]
+		}
+	],
+	"background": {
+		"page": "html/background.html"
+	},
+	"options_page": "html/options.html",
+	"content_security_policy":"script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'"
+	/*
+		TODO: add these properties for user auth stuff:
+
+	    "oauth2": {
+	    	"client_id": "197993359621-6q4s20irj442v5n7kpfd4ob54u88b8ih.apps.googleusercontent.com",
+	    	"scopes": [
+	      		"https://www.googleapis.com/auth/userinfo.email",
+	      		"https://www.googleapis.com/auth/userinfo.profile"
+	    	]
+	  	},
+	    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA20tPoEJrU6IouTlxhEgtCB3exSbK/XJ/mgI1c2S/11llvVZcQJ2ioVVrzabjvhS1MeEwmFmvk2ioBRp22LzfgFhqVsGDqXCub0+Tc3QQZp0tIJ6YOFy02NA/NSAbCdtg5fF7iqZIRG4DvYBQbkHS4SG/YbqYC05ZjhsnquP9FLn3I1Qpb2URViXJFduJklp5Cu85r+qEmwCNFHDuEIUXDFuV3qpA0EcH1mrsACNUW2RPshfpttgpDPNaoxQ8wBsreW9Bl4Rju6o2sgA+mK1K+X3qlpUKtu8QcP70ivGhscDm9J07qfvdYtUa8JQtvW26/HP9SVs7k4x/6+UaByYvBQIDAQAB"
+	*/
+}
