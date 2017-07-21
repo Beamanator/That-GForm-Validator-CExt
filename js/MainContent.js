@@ -78,12 +78,14 @@ function setupValidators(obj) {
 // ========================================================================
 
 function setupVal_Date(arr) {
-	console.log('date val - in progress');
+	console.log('date val - in progress', arr);
 
 	// loop through all date elements in this form that need validation
 	for (let i = 0; i < arr.length; i++) {
 		var field = arr[i],
-			fieldName = field['field_name'];
+			fieldName = field['field_name'],
+			fieldFormat = field['format'],
+			includeToday = field['include_today'];
 
 		// first get html element w/ name in field_name
 		var elem = $('div[aria-label="' + fieldName + '"] input[type!="hidden"]');
@@ -91,14 +93,13 @@ function setupVal_Date(arr) {
 		// next setup blur for when element changes
 		elem.blur(function(e) {
 			// get value of date - default format is probably 'yyyy-MM-dd'
-			var val = $(this).val();
+			var date = $(this).val();
 
 			// if invalid format, val will be empty
-			if (val !== '') {
+			if (date !== '') {
 				// FIXME: TODO: how do we know date format should always be 'yyyy-MM-dd'???
+				validateDate(fieldFormat, date, includeToday);
 			}
-
-			debugger;
 		});
 
 		// inside blur check if data is valid
@@ -459,14 +460,61 @@ function validatePhoneNo(throwErrorFlag) {
 }
 
 /*
-Validates if a given date is in correct format
+Validates if a given date is in correct format, based on passed-in format
 	Validation format: DD/MM/YYYY
 		00 <= DD <= 31
 		00 <= MM <= 12
 		1000 <= YYYY <= 2030
 */
-function validateDate(element) {
-	// debugger;
+/**
+ * Function returns the validity of the date entered (true if valid, false if not)
+ * 
+ * @param {string} format - type of format for date validation
+ * @param {string} date - date from date box in form
+ * @param {boolean} includeToday - if today should be included as valid
+ * @returns - true / false if valid
+ */
+function validateDate(format, date, includeToday) {
+	/**
+	 * Function returns true if inputDate is in the future, false other
+	 * 
+	 * @param {string} inputDate - date from google form
+	 * @param {boolean} includeToday - include today in [future] calculation
+	 * @returns - true / false if input date is valid or not
+	 */
+	function F_future(dateString, includeToday) {
+		// get current date in yyyy-MM-dd format
+		var currDate = new Date();
+		var date = new Date(dateString);
+
+		// if we include today, subtract 1 from current date before compare
+		if (includeToday)
+			currDate.setDate(currDate.getDate() - 1);
+
+		// return true if given date is after today
+		return date.getTime() > currDate.getTime();
+
+	}
+
+	var valid = false;
+	if (includeToday === undefined)
+		includeToday = false;
+	
+	switch(format) {
+		case 'future':
+			valid = F_future(date, includeToday);
+			break;
+
+		case 'past':
+			// valid = F_past(date);
+			break;
+
+		default:
+			console.error('Error: could not find validation function for format:',
+				format);
+	}
+
+	return valid;
 }
 
 // ========================================================================
