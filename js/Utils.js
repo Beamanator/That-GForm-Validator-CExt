@@ -16,6 +16,30 @@ function Utils_GetPageURL() {
 }
 
 /**
+ * Function gets the form html element (via jQuery) that matches a given field name
+ * 
+ * @param {string} fieldName - name of field to search for in form 
+ * @returns - element if found, false otherwise
+ */
+function Utils_GetFormField(fieldName) {
+	// get html element w/ specified field name
+	var elem = $('div[aria-label="' + fieldName + '"] input[type!="hidden"]');
+
+	// if 0 or > 1 elements found, quit and error
+	if (elem.length !== 1) {
+		ThrowError({
+			title: 'Form Element Not Found',
+			message: 'Couldn\'t find form element with name "' + fieldName + '"',
+			errMethods: ['mAlert', 'mConsole']
+		});
+		return false;
+	}
+
+	else
+		return elem;
+}
+
+/**
  * Function gets Google Form Code from Google Form URL. This code is usually
  * a very long string, and will be used to store validation data in Firebase
  * 

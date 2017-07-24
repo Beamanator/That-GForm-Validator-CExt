@@ -47,6 +47,10 @@ function getFormCodeValidator(code) {
  */
 function setupValidators(obj) {
 	Object.keys(obj).forEach(function(valType, index) {
+		// skip this key if not a type of validation
+		if (valType === '_internal_notes')
+			return;
+
 		var valArr = obj[valType];
 
 		switch (valType) {
@@ -77,41 +81,38 @@ function setupValidators(obj) {
 //                       CHANGE -> VALIDATION FUNCTIONS (new)
 // ========================================================================
 
+/**
+ * Function loops through array of data from Firebase and following this process:
+ * 1) finds each html element,
+ * 2) sets a blur function to validate dates on each element
+ * 3) throws error if date doesn't follow desired format
+ * 
+ * @param {object} arr - array of fields that need date validation setup
+ */
 function setupVal_Date(arr) {
 	console.log('date val - in progress', arr);
 
 	// loop through all date elements in this form that need validation
 	for (let i = 0; i < arr.length; i++) {
 		var field = arr[i],
-			fieldName = field['field_name'],
-			fieldFormat = field['format'],
-			includeToday = field['include_today'];
-
+			fieldName = field['field_name'];
+		
 		// first get html element w/ name in field_name
-		var elem = $('div[aria-label="' + fieldName + '"] input[type!="hidden"]');
+		// if elem isn't found, skip to next item in arr
+		var elem = Utils_GetFormField(fieldName);
+		if (!elem)
+			continue;
 
 		// next setup blur for when element changes
 		elem.blur(function(e) {
 			// get value of date - format doesn't really matter
-			var date = $(this).val();
+			var formDate = $(this).val();
 
 			// if invalid format, val will be empty
-			if (date !== '') {
-				// If date is invalid, throw error
-				if ( !validateDate(fieldFormat, date, includeToday) ) {
-					let message = 'Invalid Date in Form: (Title="' + fieldName +
-						'").\nPlease enter date again.' +
-						'\nDate entered: ' + date +
-						'\nDate must have format: ' + fieldFormat;
-
-					ThrowError({
-						title: 'Invalid Date',
-						message: message,
-						errMethods: ['mAlert', 'mConsole']
-					});
-
+			if (formDate !== '') {
+				// If date is invalid, reset value in form to blank
+				if ( !validateDate(field, formDate) )
 					$(this).val('');
-				}
 			}
 		});
 	}
@@ -467,22 +468,15 @@ function validatePhoneNo(throwErrorFlag) {
 	}
 }
 
-/*
-Validates if a given date is in correct format, based on passed-in format
-	Validation format: DD/MM/YYYY
-		00 <= DD <= 31
-		00 <= MM <= 12
-		1000 <= YYYY <= 2030
-*/
 /**
  * Function returns the validity of the date entered (true if valid, false if not)
+ * based on given fieldData settings
  * 
- * @param {string} format - type of format for date validation
+ * @param {object} fieldData - data describing form field and its settings
  * @param {string} inputDate - date from date box in form
- * @param {boolean} includeToday - if today should be included as valid
  * @returns - true / false if valid
  */
-function validateDate(format, inputDate, includeToday) {
+function validateDate(fieldData, inputDate) {
 	/**
 	 * Function returns true if inputDate is in the future, false others
 	 * 
@@ -501,10 +495,14 @@ function validateDate(format, inputDate, includeToday) {
 
 		// return true if given date is after today
 		return formDate.getTime() > currDate.getTime();
-
 	}
 
+	var fieldName = fieldData['field_name'],
+		format = 	fieldData['format'],
+		includeToday = fieldData['include_today'];
+	
 	var valid = false;
+
 	if (includeToday === undefined)
 		includeToday = false;
 	
@@ -514,12 +512,26 @@ function validateDate(format, inputDate, includeToday) {
 			break;
 
 		case 'past':
-			// valid = F_past(date);
+			// valid = F_past(inputDate, includeToday);
 			break;
 
 		default:
 			console.error('Error: could not find validation function for format:',
 				format);
+	}
+
+	// if date is not valid, send error message
+	if (!valid) {
+		let message = 'Form field invalid: (Field Name = "' + fieldName + '").' +
+			'\nPlease enter date again.' +
+			'\nDate entered: ' + inputDate +
+			'\nDate must have format: ' + format;
+
+		ThrowError({
+			title: 'Invalid Date',
+			message: message,
+			errMethods: ['mAlert', 'mConsole']
+		});
 	}
 
 	return valid;

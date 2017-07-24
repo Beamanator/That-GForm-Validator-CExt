@@ -1,37 +1,40 @@
-// Last Updated: March 21, 2017
+// Last Updated: July 24, 2017
 // ==================== ERROR THROWING API =======================
 
-/*
-	Ideas for improvement:
-	1) Throw swal error?
-*/
+/**
+ * Ideas for improvement:
+ * 1) Throw real popupover, not just swal (from RIPS)
+ */
 
-/*
-	@Function:
-		API takes in a config object with different available properties, outlined
-			in param section below. This API is made to be transferrable between
-			many applications (originally created for Chrome Extensions). Written
-			in pure JS, no extra libraries are required.
+/**
+ * Changelog:
+ * 24 July 2017:
+ * 		- Updated format of comments / function documentation
+ * 		- added title to mConsole, mConfirm, mAlert outputs
+ * 		- changed console.log() to console.error()
+ */
 
-	@Params:
-		config = configuration object with the following possible properties:
-
-			message: 		(String) - message to display via errorTypes array
-
-			errMethods: 	(Array) - List of methods for displaying error message
-				mConsole: 		(String / number) - message
-				mPopup: 		(String) - message (REQUIRES EXTRA JQUERY LIBRARIES)
-				mAlert: 		(String) - message
-				mConfirm: 		(String) - message
-				mSwal: 			(String) - message (Swal error comes from RIPS codebase) 
-
-			possible future properties that could be useful:
-				fFormatFunction: (function callback)
-				eValue: (Obj, String, etc) - error value (used in format function)
-
-	@Return:
-		boolean = true if error throwing is successful, false otherwise
-*/
+/**
+ * API takes in a config object with different available properties, outlined
+ * 		in param section below. This API is made to be transferrable between
+ * 		many applications (originally created for Chrome Extensions). Written
+ * 		in pure JS, no extra libraries are required.
+ * 
+ * @param {object} config - config object with the following possible properties:
+ * 			message: 		(String) - message to display via errorTypes array
+ * 
+ * 			errMethods: 	(Array) - List of methods for displaying error message
+ * 				mConsole: 		(String / number) - message
+ * 				mPopup: 		(String) - message (REQUIRES EXTRA JQUERY LIBRARIES)
+ * 				mAlert: 		(String) - message
+ * 				mConfirm: 		(String) - message
+ * 				mSwal: 			(String) - message (Swal error comes from RIPS codebase)
+ * 
+ * 
+ * 			possible future properties that could be useful:
+ * 				fFormatFunction: (function callback)
+ * 				eValue: (Obj, String, etc) - error value (used in format function)
+ */
 function ThrowError(config) {
 	if (!config) return;
 
@@ -63,15 +66,15 @@ function ThrowError(config) {
 
 		switch(errType) {
 			case 'mConsole':
-				console.log(message);
+				console.error(title + '\n' + message);
 				break;
 
 			case 'mAlert':
-				alert(message);
+				alert(title + '\n' + message);
 				break;
 
 			case 'mConfirm':
-				confirm(message);
+				confirm(title + '\n' + message);
 				break;
 
 			case 'mSwal':
