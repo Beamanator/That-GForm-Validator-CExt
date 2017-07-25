@@ -1,6 +1,7 @@
 ﻿# That-GForm-Validator_CExt
 
-Goal = one extension to add validation to Google Forms
+Some important notes about this extension:
+- If validation is set up on a field and the field name is changed, you MUST tell the developer to change the settings in Firebase
 
 Current working / live Validation schemes:
 
