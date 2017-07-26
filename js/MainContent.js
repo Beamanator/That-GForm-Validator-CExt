@@ -90,7 +90,7 @@ function setupValidators(obj) {
  * @param {object} arr - array of fields that need date validation setup
  */
 function setupVal_Date(arr) {
-	console.log('date val - in progress', arr);
+	console.log('date val arr:', arr);
 
 	// loop through all date elements in this form that need validation
 	for (let i = 0; i < arr.length; i++) {
@@ -120,7 +120,26 @@ function setupVal_Date(arr) {
 
 function setupVal_Email(arr) { console.log('email val'); }
 function setupVal_Phone(arr) { console.log('phone val'); }
-function setupVal_Unhcr(arr) { console.log('unhcr val'); }
+function setupVal_Unhcr(arr) {
+	console.log('unhcr val - in progress', arr);
+
+	// loop through all unhcr elements in this form that need validation
+	for (let i = 0; i < arr.length; i++) {
+		var field = arr[i],
+			fieldName = field['field_name'];
+
+		// first get html element w/ name in field_name
+		var elem = Utils_GetFormField(fieldName);
+		if (!elem)
+			continue;
+
+		// next setup blur for when element changes
+		elem.blur(function(e) {
+			// get value of text box (unhcr)
+			
+		});
+	}
+}
 
 // ========================================================================
 //                       CHANGE -> VALIDATION FUNCTIONS (old)
