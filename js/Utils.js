@@ -30,7 +30,7 @@ function Utils_GetFormField(fieldName) {
 		ThrowError({
 			title: 'Form Element Not Found',
 			message: 'Couldn\'t find form element with name "' + fieldName + '"',
-			errMethods: ['mAlert', 'mConsole']
+			errMethods: ['mConsoleW']
 		});
 		return false;
 	}

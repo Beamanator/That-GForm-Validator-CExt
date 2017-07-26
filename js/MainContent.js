@@ -51,28 +51,48 @@ function setupValidators(obj) {
 		if (valType === '_internal_notes')
 			return;
 
-		var valArr = obj[valType];
+		var valArr = obj[valType],
+			blurFn;
 
+		// set appropriate blur function depending on type of validation
 		switch (valType) {
 			case 'date':
-				setupVal_Date(valArr);
+				blurFn = setupBlur_Date;
+
 				break;
 
 			case 'email':
-				setupVal_Email(valArr);
+				blurFn = setupBlur_Email;
 				break;
 
 			case 'phone':
-				setupVal_Phone(valArr);
+				blurFn = setupBlur_Phone;
 				break;
 			
 			case 'unhcr':
-				setupVal_Unhcr(valArr);
+				blurFn = setupBlur_Unhcr;
 				break;
 
 			default:
 				console.error('Validation type <' + valType + '> not recognized' +
 				' by switch inside setupValidators()');
+		}
+
+		if (blurFn !== undefined) {
+			// loop through valArr to set up validation on all elements of this type
+			for (let i = 0; i < valArr.length; i++) {
+				var field = valArr[i],
+					fieldName = field['field_name'];
+
+				// get html element w/ name 'fieldName'
+				var elem = Utils_GetFormField(fieldName);
+				if (!elem)
+					continue;
+
+				// set blur function on element, passing field in first parameter
+				// note: first param data goes to blur event's event.data node
+				elem.blur(field, blurFn);
+			}
 		}
 	});
 }
@@ -82,63 +102,30 @@ function setupValidators(obj) {
 // ========================================================================
 
 /**
- * Function loops through array of data from Firebase and following this process:
- * 1) finds each html element,
- * 2) sets a blur function to validate dates on each element
- * 3) throws error if date doesn't follow desired format
+ * Function gets form data (date) then checks if it's valid. If it isn't, clears
+ * the input back to nothing. Note: passed-in field data comes in event.data node.
  * 
- * @param {object} arr - array of fields that need date validation setup
+ * @param {object} event - jQuery event object holding field data and more 
  */
-function setupVal_Date(arr) {
-	console.log('date val arr:', arr);
+function setupBlur_Date(event) {
+	var field = event.data;
 
-	// loop through all date elements in this form that need validation
-	for (let i = 0; i < arr.length; i++) {
-		var field = arr[i],
-			fieldName = field['field_name'];
-		
-		// first get html element w/ name in field_name
-		// if elem isn't found, skip to next item in arr
-		var elem = Utils_GetFormField(fieldName);
-		if (!elem)
-			continue;
+	// get value of date in Google Form - format doesn't really matter
+	var formDate = $(this).val();
 
-		// next setup blur for when element changes
-		elem.blur(function(e) {
-			// get value of date - format doesn't really matter
-			var formDate = $(this).val();
-
-			// if invalid format, val will be empty
-			if (formDate !== '') {
-				// If date is invalid, reset value in form to blank
-				if ( !validateDate(field, formDate) )
-					$(this).val('');
-			}
-		});
+	// if invalid format (or didn't enter month or year or day),
+	// val will be empty. If not empty, check format
+	if (formDate !== '') {
+		// If date is invalid, reset value in form to blank
+		if ( !validateDate(field, formDate) )
+			$(this).val('');
 	}
 }
 
-function setupVal_Email(arr) { console.log('email val'); }
-function setupVal_Phone(arr) { console.log('phone val'); }
-function setupVal_Unhcr(arr) {
+function setupBlur_Email(e) { console.log('email val'); }
+function setupBlur_Phone(e) { console.log('phone val'); }
+function setupBlur_Unhcr(e) {
 	console.log('unhcr val - in progress', arr);
-
-	// loop through all unhcr elements in this form that need validation
-	for (let i = 0; i < arr.length; i++) {
-		var field = arr[i],
-			fieldName = field['field_name'];
-
-		// first get html element w/ name in field_name
-		var elem = Utils_GetFormField(fieldName);
-		if (!elem)
-			continue;
-
-		// next setup blur for when element changes
-		elem.blur(function(e) {
-			// get value of text box (unhcr)
-			
-		});
-	}
 }
 
 // ========================================================================
@@ -549,7 +536,7 @@ function validateDate(fieldData, inputDate) {
 		ThrowError({
 			title: 'Invalid Date',
 			message: message,
-			errMethods: ['mAlert', 'mConsole']
+			errMethods: ['mAlert', 'mConsoleE']
 		});
 	}
 

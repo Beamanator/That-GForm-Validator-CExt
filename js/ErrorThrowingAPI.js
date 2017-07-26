@@ -12,6 +12,8 @@
  * 		- Updated format of comments / function documentation
  * 		- added title to mConsole, mConfirm, mAlert outputs
  * 		- changed console.log() to console.error()
+ * 26 July 2017:
+ * 		- added mConsoleE and mConsoleW for error and warn
  */
 
 /**
@@ -25,6 +27,7 @@
  * 
  * 			errMethods: 	(Array) - List of methods for displaying error message
  * 				mConsole: 		(String / number) - message
+ * 					or mConsoleE (Error) or mConsoleW (Warn)
  * 				mPopup: 		(String) - message (REQUIRES EXTRA JQUERY LIBRARIES)
  * 				mAlert: 		(String) - message
  * 				mConfirm: 		(String) - message
@@ -66,7 +69,13 @@ function ThrowError(config) {
 
 		switch(errType) {
 			case 'mConsole':
+				console.log(title + '\n' + message);
+				break;
+			case 'mConsoleE':
 				console.error(title + '\n' + message);
+				break;
+			case 'mConsoleW':
+				console.warn(title + '\n' + message);
 				break;
 
 			case 'mAlert':
