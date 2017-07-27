@@ -22,8 +22,21 @@ function Utils_GetPageURL() {
  * @returns - element if found, false otherwise
  */
 function Utils_GetFormField(fieldName) {
-	// get html element w/ specified field name
-	var elem = $('div[aria-label="' + fieldName + '"] input[type!="hidden"]');
+	// get html element with aria-label set with fieldName
+	var ariaElem = $('[aria-label="' + fieldName + '"]'),
+		elem;
+
+	// if ariaElem is a div element (date box), need to find non-hidden input element
+	if (ariaElem.is('div'))
+		elem = ariaElem.find('input[type!="hidden"]');
+
+	// if ariaElem is an input (text box), that's the element we want
+	else if (ariaElem.is('input'))
+		elem = ariaElem;
+
+	// if neither, let below code throw an error
+	else
+		elem = [];
 
 	// if 0 or > 1 elements found, quit and error
 	if (elem.length !== 1) {
@@ -37,6 +50,17 @@ function Utils_GetFormField(fieldName) {
 
 	else
 		return elem;
+}
+
+/**
+	 * Function removes non-alphanumeric values from input value - everything
+	 * but letters and numbers
+	 * 
+	 * @param {string} val - string to remove non-alphanumeric characters from
+	 * @returns - original string minus non-alphanumeric characters
+	 */
+function Utils_RemoveNonAlphanumeric(val) {
+	return num.replace(/[^ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]/g,'');
 }
 
 /**
