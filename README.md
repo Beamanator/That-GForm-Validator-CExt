@@ -1,7 +1,7 @@
 ﻿# That-GForm-Validator_CExt
 
 Some important notes about this extension:
-- If validation is set up on a field and the field name is changed, you MUST tell the developer to change the settings in Firebase
+- If validation is set up on a field and the field name is changed, you MUST tell the developer to change the settings so that that field will still have validation work! [This change is made in Firebase]
 
 Current working / live Validation schemes:
 
