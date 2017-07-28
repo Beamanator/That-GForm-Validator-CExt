@@ -60,7 +60,7 @@ function Utils_GetFormField(fieldName) {
 	 * @returns - original string minus non-alphanumeric characters
 	 */
 function Utils_RemoveNonAlphanumeric(val) {
-	return num.replace(/[^ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]/g,'');
+	return val.replace(/[^ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]/g,'');
 }
 
 /**

@@ -416,12 +416,18 @@ function validateUNHCR(fieldData, formUNHCR) {
     /**
 	 * Function throws "ThrowError" error for UNHCR not matching any format
 	 */
-	function throwUnhcrError() {
-    	var msg = 'UNHCR numbers must match one of these formats:' +
+	function throwUnhcrError(message) {
+		var msg;
+		
+		if (message) {
+			msg = message;
+		} else {
+			msg = 'UNHCR numbers must match one of these formats:' +
     			'\n###-YYC##### (new)' +
 	        	'\n####/YYYY (old)' +
 	        	'\n###-CS########' +
-	        	'\nFor no UNHCR number, enter "None"';
+				'\nFor no UNHCR number, try "None" or "Unknown"';
+		}
 
     	// if ThrowError (from ErrorThrowingAIP.js) doesn't exist,
     	// -> log error message to console
@@ -455,8 +461,8 @@ function validateUNHCR(fieldData, formUNHCR) {
 
 	var $this = fieldData['$this'],
 		formats = fieldData['formats'],
-		valid = false,
-		substrArr = [0, ''];
+		valid = false;
+		// validFormatsMessage = 'UNHCR numbers must match one of these formats:';
 
     // put upper-case value back into input box
     $this.val( formUNHCR );
@@ -464,7 +470,9 @@ function validateUNHCR(fieldData, formUNHCR) {
 	// loop through formats
 	for (let i = 0; i < formats.length; i++) {
 		var fmt = formats[i],
-			regexFormat = '';
+			regexFormat = '',
+			substrArr = [0, ''],
+			specialOutput = '';
 
 		switch (fmt) {
 			case 'New':
@@ -479,6 +487,7 @@ function validateUNHCR(fieldData, formUNHCR) {
 
 			case 'None':
 				regexFormat = getFormat_None();
+				specialOutput = 'None';
 				break;
 
 			case 'Old':
@@ -487,8 +496,11 @@ function validateUNHCR(fieldData, formUNHCR) {
 				break;
 
 			default:
-				// treat format as regex
-				regexFormat = fmt;
+				// treat format as "regex,finaloutput"
+				let customFmtArr = fmt.split(',');
+
+				regexFormat = customFmtArr[0];
+				specialOutput = customFmtArr[1];
 		}
 		
 		// remove non-alphanumeric characters, then replace O's with 0's
@@ -508,8 +520,8 @@ function validateUNHCR(fieldData, formUNHCR) {
 		// and set valid to true!
 		else {
 			// if format is 'None', set input value to 'None'.
-			if (fmt === 'None')
-				$this.val( 'None' );
+			if (specialOutput !== '')
+				$this.val( specialOutput );
 
 			// else, set input value to new formUNHCR value
 			else
@@ -525,7 +537,8 @@ function validateUNHCR(fieldData, formUNHCR) {
     	return true;
     } else {
     	// No valid formats, so pop up warning!
-    	throwUnhcrError();
+		// throwUnhcrError(validFormatsMessage); // TODO: add new message here
+		throwUnhcrError();
     	return false;
     }
 }
