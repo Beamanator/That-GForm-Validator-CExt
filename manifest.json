@@ -24,7 +24,10 @@
 
     "content_scripts": [
 		{
-			"matches": [ "https://docs.google.com/forms/*" ],
+			"matches": [
+				"https://docs.google.com/forms/*",
+				"https://docs.google.com/*/stars-egypt.org/forms/*"
+			],
 			"css": [
 				"css/validator_link.css"
 			],

@@ -58,7 +58,6 @@ function setupValidators(obj) {
 		switch (valType) {
 			case 'date':
 				blurFn = setupBlur_Date;
-
 				break;
 
 			case 'email':
@@ -147,261 +146,16 @@ function setupBlur_Unhcr(e) {
 //                       CHANGE -> VALIDATION FUNCTIONS (old)
 // ========================================================================
 
-/**
- * Function adds / removes phone number validation to the following pages:
- * Registration
- * Client Basic Information
- * 
- * @param {boolean} on specifies if we are turning validation on or off
- */
-function setValidatePhoneNo(on) {
-	// Add jQuery 'blur' function to phone text box.
-	// When phone number is changed and focus leaves, calls validation function
-    
-    if (on) {
-    	updateStorageLocal({'VALID_PHONE': true}, function(response) {
-			$("#" + getPhoneElemID() ).blur(function () {
-		        validatePhoneNo(true);
-		    });
-		});
-	} else {
-		updateStorageLocal({'VALID_PHONE': false}, function(response) {
-			$("#" + getPhoneElemID() ).unbind("blur");
-		});
-	}
-}
-
-/**
- * Function adds / removes UNHCR number validation to the following pages:
- * Registration
- * Client Basic Inforamtion
- * 
- * @param {boolean} on specifies if we are turning validation on or off
- */
-function setValidateUNHCR(on) {
-    // Add jQuery 'blur' function to UNHCR text box.
-    // When UNHCR number is changed and focus leaves, call validation function
-    
-    if (on) {
-    	updateStorageLocal({'VALID_UNHCR': true}, function(response) {
-			$("#UNHCRIdentifier").blur(function () {
-		        validateUNHCR(true);
-		    });
-		});
-	} else {
-		updateStorageLocal({'VALID_UNHCR': false}, function(response) {
-			$("#UNHCRIdentifier").unbind("blur");
-		});
-	}
-}
-
-function setValidateAppointmentNo(on) {
-	console.log('woot! not implemented yet...');
-}
-
 // ========================================================================
 //                            CHROME LISTENERS
 // ========================================================================
 
-// "clicked_browser_action" is our point for kicking things off
-chrome.runtime.onMessage.addListener( function(request, MessageSender, sendResponse) {
-	// Kick things off in content.js!
-	if( request.message === "clicked_browser_action" ) {
-		// console.log(request.value, request.on);
-		switch (request.value) {
-			case "validate_unhcr":
-				setValidateUNHCR(request.on);
-				break;
-	        case "validate_phone":
-	        	setValidatePhoneNo(request.on);
-        		break;
-        	// case "validate_dates":
-        	// 	changeValidateDates(request.on);
-        	// 	break;
-        	// case "validate_appt_no":
-        	// 	changeValidateAppointmentNo(request.on);
-        	// 	break;
-			default:
-				console.log('unhandled browser action click!');
-		}
-	} else {
-		console.log('listened to message, but not handled -> ',
-			request,
-			request.message
-		);
-	}
-});
+// chrome.runtime.onMessage.addListener( function(request, MessageSender, sendResponse) {
+// });
 
 // ========================================================================
 //                            VALIDATION FUNCTIONS
 // ========================================================================
-
-/**
- *	Validates if a given UNHCR ID is valid in the new or old format
- *		valid 'New' format: ###-YYC#####
- *		valid 'Old' format: ####/YYYY
- *		valid 'Pre-card' format: ###-CS########
- *		valid 'Unknown' / 'None' format: 'None'
- * 
- * @param {boolean} throwErrorFlag if true, errors is thrown. If false, is not thrown
- * @returns boolean for valid fields (true = valid, false = invalid) 
- */
-// function validateUNHCR(throwErrorFlag) {
-
-//     // can use '\\n' to enter text on a new line if needed
-//     function throwUnhcrError(message, fatal) {
-//     	var msg = '';
-
-//     	// if message is passed in, use that string. else use default.
-//     	if (message) {
-//     		msg = message;
-//     	} else {
-//     		msg = 'UNHCR numbers must match one of these formats:' +
-//     			'\\n###-YYC##### (new)' +
-// 	        	'\\n####/YYYY (old)' +
-// 	        	'\\n###-CS########' +
-// 	        	'\\nFor no UNHCR number, enter \\"None\\"';
-//     	}
-
-//     	// if ThrowError (from ErrorThrowingAIP.js) doesn't exist,
-//     	// -> log error message to console
-// 		// also if throwErrorFlag is false, just throw console error.
-//     	if (!ThrowError || !throwErrorFlag) {
-//     		console.error(msg);
-//     		return;
-//     	}
-
-// 	    // if fatal flag is set, show different title
-// 	    if (fatal) {
-// 	    	title = 'Invalid UNHCR #';
-// 	    } else {
-// 	    	title = 'Warning: UNHCR # Edited'
-// 	    }
-
-//     	ThrowError({
-//     		title: title,
-//     		message: msg,
-//         	errMethods: ['mConsole', 'mSwal']
-//     	});
-//     }
-
-//     // function removes non-alphanumeric values like \, -, +, etc
-//     function removeNonAlphanumeric(num) {
-//     	return num.replace(/[^ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]/g,'');
-//     }
-
-//     // function checks if format is valid for the new UNHCR ID style
-//     function checkValidNew(num) {
-//         var format = "^[0-9]{3}-[0-9]{2}C[0-9]{5}$";
-
-//         // remove non-alphanumeric values from num
-//         num = removeNonAlphanumeric(num);
-
-//         // convert letters to uppercase and replace capital O with zeros (0)
-// 	    num = num.replace(/O/g,"0");
-
-//         // add '-' in 3rd position!
-// 	    num = num.substr(0, 3) + "-" + num.substr(3);
-
-//         // if entered data doesn't match format, return false.
-//         if (num.match(format) == null) {
-//         	return false;
-//         } else {
-//         	placeInputValue('UNHCR', num);
-//         	return true; 
-//         }
-//     }
-
-//     // function checks if format is valid for the old UNHCR ID style
-//     function checkValidOld(num) {
-//         var format = "^[0-9]{4}/[0-9]{4}$";
-
-//         // remove non-alphanumeric values from num
-//         num = removeNonAlphanumeric(num);
-
-//         // convert letters to uppercase and replace capital O with zeros (0)
-// 	    num = num.replace(/O/g,"0");
-
-//         // add '/' in 4th position!
-// 	    num = num.substr(0, 4) + "/" + num.substr(4);
-
-//         // if entered data doesn't match format, return false.
-//         if (num.match(format) == null) {
-//             return false;
-//         } else {
-//         	placeInputValue('UNHCR', num);
-//         	return true
-//         }
-//     }
-
-//     // function checks if format is valid for case number (before getting card)
-//     function checkValidCS(num) {
-//     	var format = "^[0-9]{3}-CS[0-9]{8}$";
-
-//     	// remove non-alphanumeric values from num
-//         num = removeNonAlphanumeric(num);
-
-//         // convert letters to uppercase and replace capital O with zeros (0)
-// 	    num = num.replace(/O/g,"0");
-
-//         // add '/' in 4th position!
-// 	    num = num.substr(0, 3) + "-" + num.substr(3);
-    	
-//     	// if entered data doesn't match format, return false.
-//     	if (num.match(format) == null) {
-//     		return false;
-//     	} else {
-//     		placeInputValue('UNHCR', num);
-//     		return true;
-//     	}
-//     }
-
-//     // function checks if value is equal to "None"!!
-//     // @param: num = UNHCR ID in capital letters
-//     function checkValidNone(num) {
-//     	// remove non-alphanumeric values from num
-//         num = removeNonAlphanumeric(num);
-
-//     	// check if it is "NONE"
-//     	if (num === 'NONE') {
-//     		placeInputValue('UNHCR', 'None');
-//     		return true;
-//     	} else {
-//     		return false;
-//     	}
-//     }
-
-//     // get UNHCR number from input box
-//     var UNHCRID = "" + $('#' + getUnhcrElemID() ).val();
-
-//     // quit if number is empty
-//     if (!UNHCRID) return;
-
-//     // convert ID to uppercase:
-//     UNHCRID = UNHCRID.toUpperCase();
-
-//     // put upper-case value back into input box
-//     placeInputValue('UNHCR', UNHCRID);
-
-//     // Logic for deciding which format to validate on
-//     if (
-//     			checkValidCS(UNHCRID)  ||
-//     			checkValidNew(UNHCRID) ||
-//     			checkValidOld(UNHCRID) ||
-//     			checkValidNone(UNHCRID)
-//     		) {
-//     	// one format is correct, so we're happy!
-//     	// console.log('UNHCR ID is valid');
-//     	return true;
-//     } else {
-//     	// No valid formats, so pop up warning!
-//     	throwUnhcrError('', 1);
-//     	return false;
-//     }
-
-//     // notifications I threw out:
-//     // throwUnhcrError('Note: Added [-] to UNHCR Number', 0);
-// }
 
 /**
  * Function returns the validity of a UNHCR number entered (true / false if valid)
@@ -537,7 +291,7 @@ function validateUNHCR(fieldData, formUNHCR) {
     	return true;
     } else {
     	// No valid formats, so pop up warning!
-		// throwUnhcrError(validFormatsMessage); // TODO: add new message here
+		// throwUnhcrError(validFormatsMessage); // TODO: add new message here, maybe
 		throwUnhcrError();
     	return false;
     }
