@@ -216,7 +216,7 @@ function validateUNHCR(fieldData, formUNHCR) {
 	var $this = fieldData['$this'],
 		formats = fieldData['formats'],
 		valid = false;
-		// validFormatsMessage = 'UNHCR numbers must match one of these formats:';
+		validFormatsMessage = 'UNHCR numbers must match one of these formats:';
 
     // put upper-case value back into input box
     $this.val( formUNHCR );
@@ -232,21 +232,25 @@ function validateUNHCR(fieldData, formUNHCR) {
 			case 'New':
 				regexFormat = getFormat_New();
 				substrArr = [3, '-'];
+				validFormatsMessage += '\n###-YYC##### (new format)';
 				break;
 
 			case 'Appointment Slip':
 				regexFormat = getFormat_AS();
 				substrArr = [3, '-'];
+				validFormatsMessage += '\n###-CS######## (appointment slip format)';
 				break;
 
 			case 'None':
 				regexFormat = getFormat_None();
 				specialOutput = 'None';
+				validFormatsMessage += '\nNone';
 				break;
 
 			case 'Old':
 				regexFormat = getFormat_Old();
 				substrArr = [4, '/']
+				validFormatsMessage += '\n####/YYYY (old format)';
 				break;
 
 			default:
@@ -255,6 +259,7 @@ function validateUNHCR(fieldData, formUNHCR) {
 
 				regexFormat = customFmtArr[0];
 				specialOutput = customFmtArr[1];
+				validFormatsMessage += '\n' + specialOutput;
 		}
 		
 		// remove non-alphanumeric characters, then replace O's with 0's
@@ -292,7 +297,7 @@ function validateUNHCR(fieldData, formUNHCR) {
     } else {
     	// No valid formats, so pop up warning!
 		// throwUnhcrError(validFormatsMessage); // TODO: add new message here, maybe
-		throwUnhcrError();
+		throwUnhcrError(validFormatsMessage);
     	return false;
     }
 }
