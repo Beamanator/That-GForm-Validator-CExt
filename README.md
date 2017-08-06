@@ -7,8 +7,8 @@ Current working / live Validation schemes:
 
 | Validate Type | Format(s) |
 |---------------|--------|
-| Date          | future |
-| Unhcr         | New (XXX-XXCXXXXX), Old (XXXX/XXXX), Appointment Slip (XXX-CSXXXXXXXX), None ('None'), custom (ex: 'Unknown' = '^UNKN0WN$,Unknown') |
+| Date (one)         | future |
+| Unhcr (many)       | New (XXX-XXCXXXXX), Old (XXXX/XXXX), Appointment Slip (XXX-CSXXXXXXXX), None ('None'), custom (ex: 'Unknown' = '^UNKN0WN$,Unknown') |
 
 # Validation Already Set Up On Specific Forms
 
